@@ -85,6 +85,3 @@ If you have any ideas for enhancing the project or find any issues, feel free to
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
----
-
-This version includes the additional information about the HTTP status endpoint and JSON API, making the project even more accessible and useful for remote monitoring. Let me know if you need any further changes!
