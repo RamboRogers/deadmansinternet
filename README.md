@@ -91,6 +91,10 @@ You can use the web interface to:
 - Updated the endpoint to /data instead of /api and moved to seconds as a unit of measurement to allow easier charting.
 - Add mDNS to the project to allow easier discovery.
 
+### Recent Updates 2024-10-06
+ 
+ - Discovered that the wifi was not reconnecting properly so added reconnect functionality.
+
 ### Future Enhancements
 
 - **Customization**: The project is open-source, and contributions are welcome! Feel free to fork the repository and add your improvements.
