@@ -18,7 +18,7 @@
 
 // WiFi Credentials
 const char* ssid = "YOURSSID";
-const char* password = "YOURSSIDKEY";
+const char* password = "YOURPASSWORD";
 
 // NTP Settings
 const long utcOffsetInSeconds = -18000; // UTC -5 hours for Eastern Time
@@ -55,6 +55,7 @@ void logStatus(const String& message);
 void updateScrollingIP();
 void setupMDNS();
 String getMetricsJSON();
+bool verifyWiFiConnection();
 
 
 //Display on Screen CYCLING
@@ -347,8 +348,48 @@ void displayPinging() {
 //TODO: This function is locking up the screen.  We need to fix
 unsigned long lastRelayActionTime = 0; // Global variable to track the last relay action time
 
+// Add this function near the other WiFi-related functions
+bool verifyWiFiConnection() {
+  if (WiFi.status() != WL_CONNECTED) {
+    logStatus("WiFi connection lost. Attempting to reconnect...");
+    WiFi.disconnect();
+    delay(1000);
+    WiFi.begin(ssid, password);
+    
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+      delay(500);
+      logStatus("Reconnecting to WiFi...");
+      attempts++;
+    }
+    
+    if (WiFi.status() == WL_CONNECTED) {
+      logStatus("WiFi reconnected successfully.");
+      scrollingIP = WiFi.localIP().toString() + " ";
+      return true;
+    } else {
+      logStatus("Failed to reconnect to WiFi.");
+      return false;
+    }
+  }
+  return true;
+}
+
+// Update the performPingCheck function to use verifyWiFiConnection
 void performPingCheck() {
   logStatus("Performing ping check...");
+  
+  // First, verify WiFi connection
+  if (!verifyWiFiConnection()) {
+    logStatus("Cannot perform ping check due to WiFi disconnection.");
+    isOffline = true;
+    offlineStartMillis = millis();
+    updateScrollingIP();
+    updateDisplay();
+    handleClientRequests();
+    return;
+  }
+  
   int successCount = 0;
   for (int i = 0; i < 5; i++) {
     updateScrollingIP();
